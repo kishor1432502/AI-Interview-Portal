@@ -1,0 +1,16 @@
+# Sensitive Credentials (Never commit real Google App Passwords)
+smtp_config.json
+
+# Dependencies & Node
+node_modules/
+package-lock.json
+
+# Temporary / Scratch files
+*.log
+scratch/
+test_*.ps1
+check.ps1
+
+# OS generated files
+.DS_Store
+Thumbs.db

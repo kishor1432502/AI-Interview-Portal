@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Interview Portal — Lockdown & Proctored Interview Platform</title>
+  <meta name="description" content="Next-generation AI-powered, lockdown-monitored interview portal with adaptive conversational evaluation, real-time proctoring, and comprehensive candidate analytics.">
+
+  <!-- Core Stylesheets -->
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/landing.css">
+  <link rel="stylesheet" href="css/auth-profile.css">
+  <link rel="stylesheet" href="css/interview.css">
+  <link rel="stylesheet" href="css/proctor.css">
+  <link rel="stylesheet" href="css/recruiter.css">
+</head>
+<body>
+
+  <div id="app-container">
+
+    <!-- Toast Notification Container -->
+    <div id="toast-container" aria-live="polite"></div>
+
+    <!-- 10-Second Lockdown Warning Modal (Section 8.2) -->
+    <div id="lockdown-warning-modal" class="lockdown-warning-overlay" role="alertdialog" aria-modal="true">
+      <div class="lockdown-warning-card">
+        <div class="warning-icon-badge">⚠️</div>
+        <h2 class="warning-title">Lockdown Rule Violation!</h2>
+        <div class="warning-violation-type" id="warning-violation-label">Exiting Fullscreen Mode</div>
+
+        <div class="warning-timer-wrap">
+          <div class="warning-countdown-number" id="warning-countdown-seconds">10</div>
+          <div class="countdown-bar-track">
+            <div class="countdown-bar-fill" id="warning-bar-fill"></div>
+          </div>
+        </div>
+
+        <p class="warning-instructions">
+          You have left the proctored test environment. Click below to resume within 10 seconds or your interview will be immediately terminated and marked as an integrity violation.
+        </p>
+
+        <button id="btn-resume-lockdown" class="btn btn-danger btn-lg" style="width: 100%;">
+          ⚡ Resume Proctored Environment Now
+        </button>
+
+        <div class="warning-strikes-info" id="warning-strikes-left">
+          Strike 1 of 3 (4th violation causes immediate auto-termination)
+        </div>
+      </div>
+    </div>
+
+    <!-- Main Navigation Header -->
+    <header class="main-header">
+      <div class="nav-container">
+        <a href="#" class="brand-logo" data-nav-view="landing">
+          <div class="brand-icon">⚡</div>
+          <span>Aegis<span class="gradient-text">Interview</span></span>
+        </a>
+
+        <ul class="nav-links">
+          <li><a href="#about" class="nav-link" data-scroll-to="about">About</a></li>
+          <li><a href="#vision" class="nav-link" data-scroll-to="vision">Vision & Mission</a></li>
+          <li><a href="#how-it-works" class="nav-link" data-scroll-to="how-it-works">How It Works</a></li>
+          <li><a href="#why-helps" class="nav-link" data-scroll-to="why-helps">Why Aegis</a></li>
+        </ul>
+
+        <div class="nav-actions">
+          <a href="/setup-guide.html" target="_blank" class="btn btn-sm" style="background: rgba(239,68,68,0.15); border: 1px solid rgba(239,68,68,0.4); color: #fca5a5; font-weight: 600; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem;">
+            ⚙️ Gmail OTP Setup
+          </a>
+          <button type="button" class="btn btn-sm" onclick="window.LiveDemoTour.startTour()" style="background: linear-gradient(135deg, #10b981 0%, #06b6d4 100%); color: #fff; font-weight: 700; box-shadow: 0 0 15px rgba(16,185,129,0.4);">
+            ▶️ Run Practical Live Demo
+          </button>
+
+          <div id="nav-auth-actions" style="display: flex; gap: 0.8rem;">
+            <button class="btn btn-secondary btn-sm" data-nav-view="auth" onclick="window.AuthModule.switchAuthTab('login')">Log In</button>
+            <button class="btn btn-primary btn-sm" data-nav-view="auth" onclick="window.AuthModule.switchAuthTab('signup')">Sign Up</button>
+          </div>
+
+          <div id="nav-user-actions" style="display: none; align-items: center; gap: 1rem;">
+            <span id="nav-user-display" class="badge badge-cyan">Candidate</span>
+            <button id="btn-nav-logout" class="btn btn-secondary btn-sm">Log Out</button>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- ====================================================================
+         VIEW 1: LANDING PAGE (PUBLIC)
+         ==================================================================== -->
+    <main id="view-landing" class="view-section active">
+
+      <!-- Hero Section -->
+      <section class="hero-section">
+        <div class="hero-badge-wrap">
+          <span class="badge badge-cyan">
+            <span class="pulse-dot"></span> Next-Gen Autonomous Proctored Interviews
+          </span>
+        </div>
+
+        <h1 class="hero-title">
+          Adaptive AI Interviews.<br>
+          <span class="gradient-text">Zero Compromise Lockdown.</span>
+        </h1>
+
+        <p class="hero-subtitle">
+          Experience conversational hiring that evaluates real problem-solving depth. Real-time resume project deep-dives, human-like adaptive follow-ups, and biometric-grade integrity monitoring.
+        </p>
+
+        <div class="hero-cta-group">
+          <!-- Primary CTA Button (Section 2 & 3) -->
+          <button class="btn btn-primary btn-lg btn-attend-interview" id="hero-cta-attend">
+            🚀 Going to attend the Interview
+          </button>
+          <a href="#how-it-works" class="btn btn-secondary btn-lg" data-scroll-to="how-it-works">
+            Learn How It Works →
+          </a>
+        </div>
+
+        <!-- Live Statistics Bar -->
+        <div class="hero-stats-bar">
+          <div class="stat-item">
+            <div class="stat-number gradient-text">15,000+</div>
+            <div class="stat-label">Interviews Conducted</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number gradient-text">99.4%</div>
+            <div class="stat-label">Proctoring Integrity Rate</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number gradient-text">4.2x</div>
+            <div class="stat-label">Faster Feedback Turnaround</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-number gradient-text">100%</div>
+            <div class="stat-label">Entire Screen Verified</div>
+          </div>
+        </div>
+      </section>
+
+      <!-- About Us Section -->
+      <section id="about" class="section-wrapper">
+        <div class="section-header">
+          <span class="badge badge-indigo section-tag">About The Platform</span>
+          <h2 class="section-title">Built for Fairness, Speed & Accuracy</h2>
+          <p class="section-desc">
+            Traditional technical screening is plagued by scheduling delays, biased evaluations, and integrity loopholes. Aegis Interview transforms the hiring pipeline into a scalable, fair, and rigorously proctored experience.
+          </p>
+        </div>
+
+        <div class="vm-grid">
+          <div class="vm-card vision-card" id="vision">
+            <div class="vm-icon">🎯</div>
+            <h3>Our Vision</h3>
+            <p>
+              To establish a merit-first global hiring standard where every engineer is evaluated on authentic technical depth, articulate problem solving, and real project ownership — completely free from geographic barriers or evaluation bias.
+            </p>
+          </div>
+
+          <div class="vm-card mission-card" id="mission">
+            <div class="vm-icon">🛡️</div>
+            <h3>Our Mission</h3>
+            <p>
+              Deliver enterprise-grade, lockdown-monitored interviewing software that pairs generative AI conversational depth with ironclad proctoring — giving candidates instant opportunity and recruiters unwavering confidence.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- How It Works Section (Section 2) -->
+      <section id="how-it-works" class="section-wrapper" style="background: rgba(255,255,255,0.01);">
+        <div class="section-header">
+          <span class="badge badge-cyan section-tag">Candidate Roadmap</span>
+          <h2 class="section-title">How The Interview Process Works</h2>
+          <p class="section-desc">Five seamless steps from account registration to your final recruiter scorecard.</p>
+        </div>
+
+        <div class="steps-container">
+          <div class="step-card">
+            <div class="step-badge">1</div>
+            <h4 class="step-title">Quick Signup</h4>
+            <p class="step-text">Create your secure candidate profile with basic credentials and verify your account access.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-badge">2</div>
+            <h4 class="step-title">Profile & Resume</h4>
+            <p class="step-text">Fill your academic details, upload ID proof, and submit your resume for automated technical parsing.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-badge">3</div>
+            <h4 class="step-title">Email OTP Gate</h4>
+            <p class="step-text">Authenticate your identity with a secure, time-limited 6-digit OTP sent straight to your email.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-badge">4</div>
+            <h4 class="step-title">Hardware Check</h4>
+            <p class="step-text">Lock into fullscreen, verify your webcam & microphone, and share your Entire Screen for lockdown monitoring.</p>
+          </div>
+          <div class="step-card">
+            <div class="step-badge">5</div>
+            <h4 class="step-title">AI Interview</h4>
+            <p class="step-text">Answer voice & text questions, engage in dynamic follow-ups, and receive a comprehensive score report.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Why This Portal Helps (Section 2) -->
+      <section id="why-helps" class="section-wrapper">
+        <div class="section-header">
+          <span class="badge badge-emerald section-tag">Key Advantages</span>
+          <h2 class="section-title">Why This Portal Helps Everyone</h2>
+          <p class="section-desc">Pioneering advantages for both ambitious candidates and high-growth engineering teams.</p>
+        </div>
+
+        <div class="features-grid">
+          <div class="feature-box">
+            <div class="feature-icon-box icon-cyan">⚖️</div>
+            <h4>Absolute Evaluation Fairness</h4>
+            <p>Every candidate is measured against uniform technical benchmarks, removing human interviewer fatigue or subjective grading variance.</p>
+          </div>
+          <div class="feature-box">
+            <div class="feature-icon-box icon-indigo">🧠</div>
+            <h4>Adaptive Follow-Up Probing</h4>
+            <p>The AI doesn't just read a static script. It listens to your explanations and asks contextual follow-ups ("Why did you choose that architecture?").</p>
+          </div>
+          <div class="feature-box">
+            <div class="feature-icon-box icon-emerald">🔒</div>
+            <h4>Lockdown Proctoring Rigor</h4>
+            <p>Enforces entire-screen sharing, detects tab switching, prevents unauthorized browser extensions, and logs all suspicious movements.</p>
+          </div>
+          <div class="feature-box">
+            <div class="feature-icon-box icon-purple">📄</div>
+            <h4>Automated Resume Deep-Dives</h4>
+            <p>Parses your actual projects and work history to tailor technical questions directly to the tools and architectures you've built.</p>
+          </div>
+          <div class="feature-box">
+            <div class="feature-icon-box icon-amber">⏱️</div>
+            <h4>Zero Scheduling Delays</h4>
+            <p>Attend your interview 24/7 on your schedule without waiting weeks for engineer availability or calendar coordination.</p>
+          </div>
+          <div class="feature-box">
+            <div class="feature-icon-box icon-rose">📊</div>
+            <h4>Transparent Scorecards</h4>
+            <p>Generates detailed recruiter review transcripts, integrity logs, communication clarity scores, and objective hiring recommendations.</p>
+          </div>
+        </div>
+
+        <!-- Footer CTA Banner -->
+        <div class="footer-cta-banner">
+          <h2>Ready To Demonstrate Your Technical Excellence?</h2>
+          <p>Complete your candidate profile, pass the security verification gate, and step into the proctored interview room.</p>
+          <button class="btn btn-primary btn-lg btn-attend-interview" id="footer-cta-attend">
+            🚀 Going to attend the Interview
+          </button>
+        </div>
+      </section>
+
+      <!-- Site Footer -->
+      <footer class="site-footer">
+        <div class="footer-inner">
+          <div class="brand-logo">
+            <div class="brand-icon">⚡</div>
+            <span>Aegis<span class="gradient-text">Interview</span></span>
+          </div>
+          <div class="footer-copy">
+            © 2026 Aegis Proctored Systems Inc. All rights reserved. Compliant with international data privacy standards.
+          </div>
+          <div class="footer-security-badges">
+            <span class="badge badge-emerald">🔒 256-Bit Encrypted</span>
+            <span class="badge badge-cyan">🖥️ Lockdown Kiosk Certified</span>
+          </div>
+        </div>
+      </footer>
+
+    </main>
+
+    <!-- ====================================================================
+         VIEW 2: AUTHENTICATION (LOGIN / SIGNUP) (Section 3)
+         ==================================================================== -->
+    <div id="view-auth" class="view-section">
+      <div class="auth-box">
+        <div class="auth-header">
+          <h2>Candidate Access Gate</h2>
+          <p>Sign in to your account or create a new profile to attend your interview.</p>
+        </div>
+
+        <div class="auth-toggle-bar">
+          <button type="button" id="tab-btn-login" class="auth-tab-btn active">Log In</button>
+          <button type="button" id="tab-btn-signup" class="auth-tab-btn">Create Account</button>
+        </div>
+
+        <!-- Login Form -->
+        <form id="form-login">
+          <div class="form-group">
+            <label class="form-label" for="login-email">Email Address <span class="required">*</span></label>
+            <input type="email" id="login-email" class="form-input" placeholder="name@college.edu or personal email" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="login-password">Password <span class="required">*</span></label>
+            <input type="password" id="login-password" class="form-input" placeholder="••••••••" required>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+            Log In to Candidate Portal →
+          </button>
+        </form>
+
+        <!-- Signup Form (Section 3) -->
+        <form id="form-signup" style="display: none;">
+          <div class="form-group">
+            <label class="form-label" for="signup-name">Full Legal Name <span class="required">*</span></label>
+            <input type="text" id="signup-name" class="form-input" placeholder="e.g. Arun Kumar" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="signup-email">Email Address <span class="required">*</span></label>
+            <input type="email" id="signup-email" class="form-input" placeholder="e.g. candidate@example.com" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="signup-password">Password <span class="required">*</span></label>
+            <input type="password" id="signup-password" class="form-input" placeholder="Min. 6 characters" required>
+          </div>
+          <div class="form-group">
+            <label class="form-label" for="signup-confirm">Confirm Password <span class="required">*</span></label>
+            <input type="password" id="signup-confirm" class="form-input" placeholder="Repeat your password" required>
+          </div>
+          <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 1rem;">
+            Create Candidate Account →
+          </button>
+        </form>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         VIEW 3: CANDIDATE PROFILE FORM (Section 4)
+         ==================================================================== -->
+    <div id="view-profile" class="view-section">
+      <div class="profile-container">
+        <div class="profile-card">
+          <div class="profile-header">
+            <div class="profile-header-text">
+              <h1>Candidate Profile Details</h1>
+              <p>Please provide your academic and background details prior to the proctored interview.</p>
+            </div>
+            <div style="display: flex; align-items: center; gap: 0.8rem; flex-wrap: wrap;">
+              <button type="button" class="btn btn-secondary btn-sm" onclick="window.ProfileModule.quickFillDemo()">⚡ Quick-Fill Demo Data</button>
+              <span class="badge badge-cyan">Step 1 of 3: Profile Setup</span>
+            </div>
+          </div>
+
+          <form id="candidate-profile-form">
+            <!-- Row 1: Full Name & Email -->
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label" for="prof-fullname">Full Name <span class="required">*</span></label>
+                <input type="text" id="prof-fullname" class="form-input" placeholder="Enter your full name" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="prof-email">Email Address <span class="required">*</span> <span class="hint">(OTP will be sent here)</span></label>
+                <input type="email" id="prof-email" class="form-input" placeholder="candidate@example.com" required>
+              </div>
+            </div>
+
+            <!-- Row 2: College Dropdown + "Other" Free-Text Input -->
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label" for="prof-college">College / University Name <span class="required">*</span></label>
+                <select id="prof-college" class="form-select" required>
+                  <option value="">Select your Institution</option>
+                  <option value="Anna University">Anna University</option>
+                  <option value="IIT Madras">Indian Institute of Technology (IIT) Madras</option>
+                  <option value="NIT Trichy">National Institute of Technology (NIT) Trichy</option>
+                  <option value="PSG College of Technology">PSG College of Technology</option>
+                  <option value="Vellore Institute of Technology (VIT)">Vellore Institute of Technology (VIT)</option>
+                  <option value="SRM Institute of Science and Technology">SRM Institute of Science and Technology</option>
+                  <option value="BITS Pilani">BITS Pilani</option>
+                  <option value="Other">Other (Specify Institution)</option>
+                </select>
+              </div>
+
+              <div class="form-group" id="prof-college-other-wrap" style="display: none;">
+                <label class="form-label" for="prof-college-other">Specify Institution Name <span class="required">*</span></label>
+                <input type="text" id="prof-college-other" class="form-input" placeholder="Enter your college or university name">
+              </div>
+
+              <!-- CGPA with Scale Toggle -->
+              <div class="form-group">
+                <div class="form-label">
+                  <span>CGPA <span class="required">*</span></span>
+                  <div class="scale-toggle">
+                    <button type="button" id="scale-10-btn" class="scale-btn active">0–10 Scale</button>
+                    <button type="button" id="scale-4-btn" class="scale-btn">0–4 Scale</button>
+                  </div>
+                </div>
+                <input type="number" id="prof-cgpa" class="form-input" step="0.01" min="0" max="10" placeholder="e.g. 8.75" required>
+              </div>
+            </div>
+
+            <!-- Row 3: Degree & Branch -->
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label" for="prof-degree">Degree <span class="required">*</span></label>
+                <select id="prof-degree" class="form-select" required>
+                  <option value="B.Tech">B.Tech / B.E. (Bachelor of Technology / Engineering)</option>
+                  <option value="M.Tech">M.Tech / M.E. (Master of Technology / Engineering)</option>
+                  <option value="B.Sc">B.Sc (Computer Science / IT)</option>
+                  <option value="BCA">BCA (Bachelor of Computer Applications)</option>
+                  <option value="MCA">MCA (Master of Computer Applications)</option>
+                  <option value="Other">Other Degree</option>
+                </select>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="prof-branch">Branch / Department <span class="required">*</span></label>
+                <select id="prof-branch" class="form-select" required>
+                  <option value="Computer Science and Engineering (CSE)">Computer Science and Engineering (CSE)</option>
+                  <option value="Information Technology (IT)">Information Technology (IT)</option>
+                  <option value="Artificial Intelligence & Data Science (AI & DS)">Artificial Intelligence & Data Science (AI & DS)</option>
+                  <option value="Electronics & Communication (ECE)">Electronics & Communication (ECE)</option>
+                  <option value="Electrical & Electronics (EEE)">Electrical & Electronics (EEE)</option>
+                  <option value="Mechanical Engineering">Mechanical Engineering</option>
+                  <option value="Other">Other Engineering / Science</option>
+                </select>
+              </div>
+            </div>
+
+            <!-- Row 4: Graduation Status & Batch Year -->
+            <div class="form-grid-2">
+              <div class="form-group">
+                <label class="form-label">Graduation Status <span class="required">*</span></label>
+                <div class="radio-group-horizontal">
+                  <label class="radio-label">
+                    <input type="radio" name="grad_status" id="grad-completed" value="completed" checked>
+                    <span>Completed</span>
+                  </label>
+                  <label class="radio-label">
+                    <input type="radio" name="grad_status" id="grad-pursuing" value="pursuing">
+                    <span>Pursuing</span>
+                  </label>
+                </div>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="prof-batch" id="batch-year-label">Year of Graduation <span class="required">*</span></label>
+                <input type="number" id="prof-batch" class="form-input" min="2018" max="2030" value="2025" required>
+              </div>
+            </div>
+
+            <!-- Row 5: Profile Links (GitHub & LinkedIn Mandatory, LeetCode Optional) -->
+            <div class="form-grid-3">
+              <div class="form-group">
+                <label class="form-label" for="prof-github">GitHub Profile Link <span class="required">*</span></label>
+                <input type="url" id="prof-github" class="form-input" placeholder="https://github.com/username" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="prof-linkedin">LinkedIn Profile Link <span class="required">*</span></label>
+                <input type="url" id="prof-linkedin" class="form-input" placeholder="https://linkedin.com/in/username" required>
+              </div>
+              <div class="form-group">
+                <label class="form-label" for="prof-leetcode">LeetCode Profile Link <span class="hint">(Optional)</span></label>
+                <input type="url" id="prof-leetcode" class="form-input" placeholder="https://leetcode.com/username">
+              </div>
+            </div>
+
+            <!-- Row 6: ID Proof & Resume Dropzones -->
+            <div class="form-grid-2" style="margin-top: 0.5rem;">
+              <div class="form-group">
+                <label class="form-label">College / Gov ID Proof <span class="required">*</span></label>
+                <div class="file-dropzone" id="id-card-dropzone">
+                  <div class="upload-icon">🪪</div>
+                  <div style="font-weight: 600; font-size: 0.9rem;">Click or Drag College / Govt ID</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">PDF, PNG, JPG (Max 5MB)</div>
+                  <input type="file" id="id-card-input" accept="image/*,.pdf" required>
+                  <div id="id-card-preview" class="file-preview-pill"></div>
+                </div>
+              </div>
+
+              <div class="form-group">
+                <label class="form-label">Resume / CV <span class="required">*</span> <span class="hint">(Auto-parsed for AI question engine)</span></label>
+                <div class="file-dropzone" id="resume-dropzone">
+                  <div class="upload-icon">📄</div>
+                  <div style="font-weight: 600; font-size: 0.9rem;">Click or Drag Resume File</div>
+                  <div style="font-size: 0.75rem; color: var(--text-muted);">PDF or DOC format (Max 10MB)</div>
+                  <input type="file" id="resume-input" accept=".pdf,.doc,.docx" required>
+                  <div id="resume-preview" class="file-preview-pill"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Auto-Parsed Resume Feedback Box -->
+            <div id="parsed-resume-feedback" style="display: none; background: rgba(15,23,42,0.6); border: 1px solid var(--border-subtle); border-radius: var(--radius-md); padding: 1.2rem; margin-top: 1rem;">
+              <div style="font-size: 0.85rem; font-weight: 700; color: var(--accent-cyan); margin-bottom: 0.4rem;">
+                ⚡ AI Resume Parser: Skills & Projects Extracted
+              </div>
+              <div id="parsed-skills-container" class="parsed-skills-wrap"></div>
+            </div>
+
+            <!-- Submit Button (Section 4) -->
+            <div style="margin-top: 2rem; display: flex; justify-content: flex-end;">
+              <button type="submit" class="btn btn-primary btn-lg" id="btn-submit-profile">
+                Start Interview →
+              </button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         VIEW 4: EMAIL OTP VERIFICATION GATE (Section 5)
+         ==================================================================== -->
+    <div id="view-otp" class="view-section">
+      <div class="otp-container">
+        <div class="otp-card">
+          <div class="otp-icon-wrap">📧</div>
+          <h2 style="font-size: 1.8rem; margin-bottom: 0.5rem;">Identity Verification Gate</h2>
+          <p style="font-size: 0.92rem; color: var(--text-secondary); margin-bottom: 1.5rem;">
+            A 6-digit one-time passcode has been dispatched to:<br>
+            <strong id="otp-sent-email" style="color: var(--accent-cyan);">candidate@example.com</strong>
+          </p>
+
+          <!-- ✅ On-Screen OTP Display Box (always visible as fallback) -->
+          <div id="otp-onscreen-box" style="
+            background: rgba(124, 58, 237, 0.12);
+            border: 2px solid rgba(124, 58, 237, 0.5);
+            border-radius: 16px;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 1.5rem;
+            text-align: center;
+          ">
+            <div id="otp-screen-label" style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 0.6rem; font-weight: 600;">
+              Generating your OTP code...
+            </div>
+            <div id="otp-simulation-code" style="
+              font-size: 2.8rem;
+              font-weight: 900;
+              letter-spacing: 10px;
+              color: #a78bfa;
+              font-family: monospace;
+              cursor: pointer;
+              transition: opacity 0.3s;
+              padding: 0.4rem;
+              border-radius: 8px;
+              display: none;
+            " title="Click to auto-fill this code">
+              ······
+            </div>
+            <div style="font-size: 0.72rem; color: var(--text-muted); margin-top: 0.5rem;">
+              👆 Click the code above to auto-fill instantly
+            </div>
+          </div>
+
+          <!-- Email status notice -->
+          <div class="simulated-email-notice" style="background: rgba(6, 182, 212, 0.08); border-color: rgba(6, 182, 212, 0.3); text-align: center; margin-bottom: 1.2rem;">
+            <div style="font-weight: 600; color: #ffffff; margin-bottom: 0.2rem;">📧 Verification Email Dispatched</div>
+            <div style="font-size: 0.82rem; color: var(--text-secondary);">
+              Check your <strong>Inbox &amp; Spam</strong> folder. If email not received, use the code shown above.
+            </div>
+          </div>
+
+          <!-- 6-Box OTP Inputs -->
+          <div class="otp-inputs-row">
+            <input type="text" maxlength="1" class="otp-box" inputmode="numeric" autofocus>
+            <input type="text" maxlength="1" class="otp-box" inputmode="numeric">
+            <input type="text" maxlength="1" class="otp-box" inputmode="numeric">
+            <input type="text" maxlength="1" class="otp-box" inputmode="numeric">
+            <input type="text" maxlength="1" class="otp-box" inputmode="numeric">
+            <input type="text" maxlength="1" class="otp-box" inputmode="numeric">
+          </div>
+
+          <div class="otp-timer-bar">
+            <span>Code expires in:</span>
+            <span class="otp-countdown" id="otp-timer">05:00</span>
+          </div>
+
+          <div style="display: flex; gap: 0.8rem; justify-content: center; flex-wrap: wrap;">
+            <button type="button" id="btn-resend-otp" class="btn btn-secondary btn-sm" disabled>
+              ↻ Resend OTP
+            </button>
+            <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('smtp-modal').classList.add('active')">
+              ⚙️ Live Email / SMTP Settings
+            </button>
+          </div>
+
+          <!-- Gmail App Password Guide -->
+          <div style="margin-top: 1.2rem; padding: 0.8rem 1rem; background: rgba(251,191,36,0.08); border: 1px solid rgba(251,191,36,0.25); border-radius: 10px; font-size: 0.78rem; color: var(--text-secondary); text-align: center;">
+            💡 <strong style="color: #fbbf24;">Want real Gmail OTP?</strong>
+            Enable Gmail 2FA → Go to
+            <a href="https://myaccount.google.com/apppasswords" target="_blank" style="color: #a78bfa;">myaccount.google.com/apppasswords</a>
+            → Create App Password → Paste it in ⚙️ SMTP Settings above.
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         VIEW 5: PRE-INTERVIEW SYSTEM CHECK BENCH (Section 6 & 6.1)
+         ==================================================================== -->
+    <div id="view-diagnostics" class="view-section">
+      <div class="diagnostics-container">
+        <div class="section-header" style="margin-bottom: 2rem;">
+          <span class="badge badge-cyan">Section 6: Lockdown Diagnostic Bench</span>
+          <h2 class="section-title">Hardware & Environment Verification</h2>
+          <p class="section-desc">
+            All 5 diagnostic tests must pass before the proctored interview room can unlock. Entire Screen sharing is strictly mandatory.
+          </p>
+        </div>
+
+        <div class="diagnostics-grid">
+          <!-- Left: Checklist -->
+          <div class="diag-checklist">
+            <!-- 1. Fullscreen -->
+            <div class="diag-item" id="diag-item-fs">
+              <div class="diag-item-left">
+                <div class="diag-status-icon">○</div>
+                <div class="diag-meta">
+                  <h4>Fullscreen Lockdown Mode</h4>
+                  <p>Guarantees no browser address bars or unmonitored desktop windows.</p>
+                </div>
+              </div>
+              <button type="button" class="btn btn-secondary btn-sm" id="diag-btn-fullscreen">Enable Fullscreen</button>
+            </div>
+
+            <!-- 2. Camera & Face Detection -->
+            <div class="diag-item" id="diag-item-cam">
+              <div class="diag-item-left">
+                <div class="diag-status-icon">○</div>
+                <div class="diag-meta">
+                  <h4>Camera & Face Detection</h4>
+                  <p>Verifies real-time presence of candidate within the webcam frame.</p>
+                </div>
+              </div>
+              <button type="button" class="btn btn-secondary btn-sm" id="diag-btn-camera">Test Camera</button>
+            </div>
+
+            <!-- 3. Microphone Audio VU-Meter -->
+            <div class="diag-item" id="diag-item-mic">
+              <div class="diag-item-left">
+                <div class="diag-status-icon">○</div>
+                <div class="diag-meta">
+                  <h4>Microphone Audio Feed</h4>
+                  <p>Checks voice capture clarity for answers and speech-to-text.</p>
+                </div>
+              </div>
+              <button type="button" class="btn btn-secondary btn-sm" id="diag-btn-mic">Test Mic</button>
+            </div>
+
+            <!-- 4. Entire Screen Share (Section 6.1) -->
+            <div class="diag-item" id="diag-item-screen">
+              <div class="diag-item-left">
+                <div class="diag-status-icon">○</div>
+                <div class="diag-meta">
+                  <h4>Entire Screen Share <span class="badge badge-rose" style="font-size:0.65rem;">Mandatory</span></h4>
+                  <p>Must share "Entire Screen". Single tabs or windows will be rejected.</p>
+                </div>
+              </div>
+              <button type="button" class="btn btn-secondary btn-sm" id="diag-btn-screen">Share Screen</button>
+            </div>
+
+            <!-- 5. Lockdown Browser Signature -->
+            <div class="diag-item status-passed" id="diag-item-lockdown">
+              <div class="diag-item-left">
+                <div class="diag-status-icon">✓</div>
+                <div class="diag-meta">
+                  <h4>Lockdown Token & Fingerprint</h4>
+                  <p>Hardware signature bound: <code id="diag-fp-token">LKD-749F-2026</code></p>
+                </div>
+              </div>
+              <span class="badge badge-emerald">Verified</span>
+            </div>
+          </div>
+
+          <!-- Right: Live Feed Diagnostics Bench -->
+          <div class="diag-preview-card">
+            <h4 style="font-size: 1rem; color: var(--text-primary);">Webcam & Mic Diagnostic Live Stream</h4>
+
+            <div class="webcam-preview-frame">
+              <video id="diag-webcam-preview" autoplay playsinline muted></video>
+              <div id="diag-face-status" class="face-detect-overlay badge-amber">
+                <span class="pulse-dot"></span> Waiting for Camera...
+              </div>
+            </div>
+
+            <div class="mic-meter-bar-container">
+              <div style="display: flex; justify-content: space-between; font-size: 0.8rem; color: var(--text-secondary);">
+                <span>Microphone Signal Level</span>
+                <span>Active VU</span>
+              </div>
+              <div class="mic-meter-track">
+                <div class="mic-meter-fill" id="diag-mic-fill"></div>
+              </div>
+            </div>
+
+            <button type="button" id="btn-begin-interview" class="btn btn-primary btn-lg" style="margin-top: 1rem;" disabled>
+              Complete All 5 Checks to Begin
+            </button>
+            <button type="button" id="diag-btn-bypass" class="btn btn-secondary btn-sm" style="margin-top: 0.6rem; width: 100%;">
+              ⚡ Quick-Pass All Checks (Demo Simulator)
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         VIEW 6: LIVE PROCTORED AI INTERVIEW ROOM (Section 7 & 8)
+         ==================================================================== -->
+    <div id="view-interview" class="view-section">
+      <div class="interview-viewport">
+
+        <!-- Top Bar with Stage & Proctor Strikes -->
+        <header class="interview-topbar">
+          <div class="interview-stage-indicator">
+            <span class="brand-logo" style="font-size: 1.1rem;">
+              <div class="brand-icon" style="width:28px;height:28px;font-size:0.9rem;">⚡</div>
+              <span>Aegis Proctored Session</span>
+            </span>
+            <div class="stage-step-pill active" id="stage-pill-1">1. Introduction</div>
+            <div class="stage-step-pill" id="stage-pill-2">2. Team Conflict</div>
+            <div class="stage-step-pill" id="stage-pill-3">3. Project Overview</div>
+            <div class="stage-step-pill" id="stage-pill-4">4. Ownership & Role</div>
+            <div class="stage-step-pill" id="stage-pill-5">5. Tools Selection</div>
+            <div class="stage-step-pill" id="stage-pill-6">6. Tooling & CI/CD</div>
+            <div class="stage-step-pill" id="stage-pill-7">7. Roadblocks & Bugs</div>
+            <div class="stage-step-pill" id="stage-pill-8">8. Scalability & DB</div>
+            <div class="stage-step-pill" id="stage-pill-9">9. Testing & Security</div>
+            <div class="stage-step-pill" id="stage-pill-10">10. Career & Impact</div>
+          </div>
+
+          <div style="display: flex; align-items: center; gap: 1.2rem;">
+            <!-- Strike Meter Indicator (Section 8.2) -->
+            <div class="strikes-container">
+              <span class="strike-label">Violations:</span>
+              <div class="strike-pips">
+                <div class="strike-pip" title="Strike 1"></div>
+                <div class="strike-pip" title="Strike 2"></div>
+                <div class="strike-pip" title="Strike 3"></div>
+              </div>
+            </div>
+
+            <span class="badge badge-emerald">
+              <span class="pulse-dot"></span> Proctored Live
+            </span>
+          </div>
+        </header>
+
+        <!-- Main Workspace -->
+        <div class="interview-workspace">
+
+          <!-- Left: AI Interviewer & Answer Dock -->
+          <div class="ai-stage-area">
+            <div class="interviewer-card">
+              <!-- AI Soundwave Avatar Core -->
+              <div class="ai-avatar-core" id="ai-avatar-core">
+                <div class="ai-avatar-pulse-ring"></div>
+                <div class="ai-soundwave">
+                  <div class="soundwave-bar"></div>
+                  <div class="soundwave-bar"></div>
+                  <div class="soundwave-bar"></div>
+                  <div class="soundwave-bar"></div>
+                  <div class="soundwave-bar"></div>
+                </div>
+              </div>
+
+              <div class="question-tag" id="ai-question-type-badge">HR EVALUATION</div>
+              <div class="adaptive-badge" id="adaptive-followup-badge">
+                <span>⚡</span> Probing Follow-Up Question
+              </div>
+
+              <div class="current-question-text" id="ai-question-text">
+                Initializing interview parameters...
+              </div>
+            </div>
+
+            <!-- Candidate Response Dock -->
+            <div class="response-dock">
+              <div class="response-status-bar">
+                <div class="mic-active-badge">
+                  <span class="pulse-dot"></span>
+                  <span id="mic-status-label">Speak your answer or type below</span>
+                </div>
+
+                <button type="button" class="btn btn-secondary btn-sm" id="btn-toggle-mic">
+                  🎙️ Toggle Microphone
+                </button>
+              </div>
+
+              <textarea id="candidate-answer-input" class="candidate-speech-transcript" placeholder="Speak clearly into your microphone or type your response here..."></textarea>
+
+              <div class="response-actions">
+                <button type="button" id="btn-submit-answer" class="btn btn-primary">
+                  Submit Answer & Proceed →
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Sidebar: Candidate Proctor Monitor -->
+          <div class="proctor-sidebar">
+            <div class="candidate-webcam-card">
+              <div style="display: flex; align-items: center; justify-content: space-between;">
+                <span style="font-size: 0.85rem; font-weight: 600;">Candidate Monitor</span>
+                <span class="badge badge-emerald" style="font-size: 0.7rem;">Face Active</span>
+              </div>
+
+              <div class="candidate-webcam-view">
+                <video id="live-candidate-video" autoplay playsinline muted></video>
+              </div>
+
+              <div class="screen-share-monitor-pill">
+                <span>Entire Screen Broadcast:</span>
+                <span style="color: var(--accent-emerald); font-weight: 600;">● Sharing</span>
+              </div>
+            </div>
+
+            <div class="session-summary-card">
+              <div class="progress-counter-row">
+                <span id="question-counter-text">Stage 1 of 5</span>
+                <span>Proctoring Mode: Lockdown</span>
+              </div>
+              <div class="progress-track">
+                <div class="progress-fill" id="interview-progress-fill"></div>
+              </div>
+            </div>
+
+            <div class="glass-card" style="padding: 1.2rem; font-size: 0.82rem; color: var(--text-secondary);">
+              <strong style="color: var(--text-primary); display: block; margin-bottom: 0.4rem;">🛡️ Lockdown Directives:</strong>
+              <ul style="padding-left: 1.2rem; line-height: 1.5;">
+                <li>Do not leave fullscreen.</li>
+                <li>Do not alt-tab or open applications.</li>
+                <li>Keep your face centered in the camera.</li>
+                <li>3 strikes maximum before immediate ejection.</li>
+              </ul>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         VIEW 7: RECRUITER REVIEW & EVALUATION DASHBOARD (Section 7.6)
+         ==================================================================== -->
+    <div id="view-recruiter" class="view-section">
+      <div class="recruiter-container">
+        <div class="report-card">
+          <!-- Header Candidate Info -->
+          <div class="report-header">
+            <div class="candidate-id-badge">
+              <div class="candidate-avatar" id="report-cand-avatar">A</div>
+              <div class="candidate-info">
+                <h2 id="report-cand-name">Candidate Name</h2>
+                <div class="candidate-meta-line" id="report-cand-meta">
+                  <span>🎓 Computer Science</span>
+                  <span>📊 CGPA: 8.8 / 10</span>
+                </div>
+              </div>
+            </div>
+
+            <div style="display: flex; gap: 0.8rem;">
+              <button id="btn-print-report" class="btn btn-secondary btn-sm">🖨️ Print / Save PDF</button>
+              <button class="btn btn-primary btn-sm" onclick="window.AppRouter.navigate('landing')">Return to Home</button>
+            </div>
+          </div>
+
+          <!-- Recommendation Banner -->
+          <div id="report-rec-banner" class="recommendation-banner rec-strong-hire">
+            <!-- Dynamic Injection -->
+          </div>
+
+          <!-- Metric Gauges -->
+          <div class="metrics-gauges-grid">
+            <div class="metric-gauge-card">
+              <div class="metric-score-val gradient-text" id="metric-val-integrity">100%</div>
+              <div class="metric-score-title">Integrity Score</div>
+            </div>
+            <div class="metric-gauge-card">
+              <div class="metric-score-val" id="metric-val-comm" style="color: var(--accent-cyan);">91%</div>
+              <div class="metric-score-title">Communication Clarity</div>
+            </div>
+            <div class="metric-gauge-card">
+              <div class="metric-score-val" id="metric-val-tech" style="color: var(--accent-emerald);">94%</div>
+              <div class="metric-score-title">Technical Depth</div>
+            </div>
+            <div class="metric-gauge-card">
+              <div class="metric-score-val" id="metric-val-proj" style="color: var(--accent-purple);">89%</div>
+              <div class="metric-score-title">Project Ownership</div>
+            </div>
+          </div>
+
+          <!-- AI Notes & Red Flags Analysis -->
+          <div class="ai-summary-grid">
+            <div class="summary-box">
+              <h3><span>🤖</span> AI Evaluator Observations</h3>
+              <ul class="summary-bullet-list">
+                <li>Demonstrated strong architectural fluency when explaining microservice event handling and fault tolerance.</li>
+                <li>Articulated clear rationale during adaptive follow-up probing, validating hands-on engineering contributions.</li>
+                <li>Answers were consistent with submitted resume experiences and GitHub project repositories.</li>
+                <li>Exhibited confident technical communication and concise structured problem-solving explanations.</li>
+              </ul>
+            </div>
+
+            <div class="summary-box">
+              <h3><span>🚩</span> Proctoring Integrity & Flags</h3>
+              <div id="report-red-flags-list">
+                <!-- Red flag items rendered here -->
+              </div>
+            </div>
+          </div>
+
+          <!-- Q&A Transcript -->
+          <div class="qa-transcript-section">
+            <h3>Interview Transcript & Adaptive Probing Log</h3>
+            <div id="report-transcript-list">
+              <!-- Q&A Cards rendered here -->
+            </div>
+          </div>
+
+          <div class="report-actions">
+            <span style="font-size: 0.85rem; color: var(--text-muted); align-self: center;">
+              Keep a human recruiter in the loop for final hire decisions.
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====================================================================
+         VIEW 8: TERMINATED DUE TO RULE VIOLATIONS (Section 8.2)
+         ==================================================================== -->
+    <div id="view-terminated" class="view-section">
+      <div class="terminated-box">
+        <div class="terminated-icon">🚫</div>
+        <h1 style="color: var(--accent-rose); font-size: 2.2rem; margin-bottom: 0.8rem;">
+          Interview Terminated
+        </h1>
+        <p style="font-size: 1.1rem; color: #fca5a5; margin-bottom: 1.5rem;" id="term-reason-text">
+          Session aborted due to excessive proctoring rule violations.
+        </p>
+
+        <div class="violation-history-list" id="term-violations-list">
+          <!-- Log of violations -->
+        </div>
+
+        <p style="font-size: 0.88rem; color: var(--text-secondary); margin-bottom: 2rem;">
+          All event streams, hardware fingerprints, and strike records have been preserved in the session audit log for recruiter review.
+        </p>
+
+        <button class="btn btn-secondary btn-lg" onclick="window.AppRouter.navigate('landing')">
+          Return to Portal Home
+        </button>
+      </div>
+    </div>
+
+    <!-- SMTP / Live Email Settings Modal -->
+    <div id="smtp-modal" class="modal-overlay">
+      <div class="modal-window" style="max-width: 500px;">
+        <button class="modal-close" onclick="document.getElementById('smtp-modal').classList.remove('active')">&times;</button>
+        <h3 style="margin-bottom: 0.3rem; font-size: 1.3rem;">⚙️ Gmail OTP Email Setup</h3>
+        <p style="font-size: 0.82rem; color: var(--text-secondary); margin-bottom: 0.8rem;">
+          உங்க Gmail App Password ஒரு முறை set பண்ணுங்க — எல்லா candidates-கும் அவங்க email-க்கு OTP போகும்.
+        </p>
+
+        <!-- Quick links -->
+        <div style="display: flex; gap: 0.6rem; flex-wrap: wrap; margin-bottom: 1.2rem;">
+          <a href="/setup-guide.html" target="_blank" style="
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            padding: 0.4rem 0.9rem; border-radius: 8px; font-size: 0.78rem; font-weight: 700;
+            background: rgba(124,58,237,0.15); border: 1px solid rgba(124,58,237,0.35);
+            color: #a78bfa; text-decoration: none;">
+            📖 Step-by-Step Guide
+          </a>
+          <a href="https://myaccount.google.com/apppasswords" target="_blank" style="
+            display: inline-flex; align-items: center; gap: 0.4rem;
+            padding: 0.4rem 0.9rem; border-radius: 8px; font-size: 0.78rem; font-weight: 700;
+            background: rgba(6,182,212,0.1); border: 1px solid rgba(6,182,212,0.3);
+            color: #67e8f9; text-decoration: none;">
+            🔑 Get App Password
+          </a>
+        </div>
+
+        <form id="smtp-settings-form" onsubmit="event.preventDefault(); window.saveSmtpConfig();">
+          <div class="form-group">
+            <label class="form-label">Your Gmail Address <span class="required">*</span></label>
+            <input type="email" id="smtp-user" class="form-input" placeholder="yourname@gmail.com" value="kishor25066@gmail.com" required>
+          </div>
+          <div class="form-group" style="margin-top: 0.8rem;">
+            <label class="form-label">Gmail App Password <span class="required">*</span> <span class="hint">(16-char — NOT your regular password)</span></label>
+            <input type="password" id="smtp-pass" class="form-input" placeholder="Paste 16-character App Password here..." required style="letter-spacing: 2px;">
+          </div>
+
+          <div style="padding: 0.7rem 0.9rem; background: rgba(245,158,11,0.08); border: 1px solid rgba(245,158,11,0.2); border-radius: 8px; font-size: 0.78rem; color: #fcd34d; margin-top: 0.8rem;">
+            💡 App Password: Gmail → Account → Security → 2FA Enable → <a href="https://myaccount.google.com/apppasswords" target="_blank" style="color: #a78bfa;">myaccount.google.com/apppasswords</a>
+          </div>
+
+          <div id="smtp-modal-result" style="display:none; padding: 0.7rem 1rem; border-radius: 8px; font-size: 0.83rem; margin-top: 0.8rem;"></div>
+
+          <div style="display: flex; justify-content: flex-end; gap: 0.8rem; margin-top: 1.2rem;">
+            <button type="button" class="btn btn-secondary btn-sm" onclick="document.getElementById('smtp-modal').classList.remove('active')">Cancel</button>
+            <button type="submit" class="btn btn-primary btn-sm">💾 Save & Activate</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Core Scripts -->
+  <script src="js/anti-extension.js"></script>
+  <script src="js/data.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/profile.js"></script>
+  <script src="js/otp.js"></script>
+  <script src="js/diagnostics.js"></script>
+  <script src="js/proctor.js"></script>
+  <script src="js/ai-engine.js"></script>
+  <script src="js/recruiter.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/demo-tour.js"></script>
+
+  <script>
+    window.saveSmtpConfig = async function() {
+      const user = document.getElementById('smtp-user').value.trim();
+      const pass = document.getElementById('smtp-pass').value.trim();
+      const resultEl = document.getElementById('smtp-modal-result');
+
+      if (pass.toLowerCase().startsWith('http://') || pass.toLowerCase().startsWith('https://') || pass.includes('.html')) {
+        resultEl.style.display = 'block';
+        resultEl.style.background = 'rgba(244,63,94,0.1)';
+        resultEl.style.border = '1px solid rgba(244,63,94,0.3)';
+        resultEl.style.color = '#fda4af';
+        resultEl.textContent = '⚠️ You pasted a webpage link! Please paste the 16-character Google App Password (e.g. abcd efgh ijkl mnop).';
+        return;
+      }
+
+      if (!pass || pass.length < 12) {
+        resultEl.style.display = 'block';
+        resultEl.style.background = 'rgba(244,63,94,0.1)';
+        resultEl.style.border = '1px solid rgba(244,63,94,0.3)';
+        resultEl.style.color = '#fda4af';
+        resultEl.textContent = '❌ Please paste your 16-character Gmail App Password (not your regular Gmail password).';
+        return;
+      }
+
+      const cfg = {
+        host: 'smtp.gmail.com',
+        port: 587,
+        enableSsl: true,
+        username: user,
+        password: pass.replace(/\s/g, ''), // Remove spaces from app password
+        from: user // Always use Gmail as FROM
+      };
+
+      try {
+        const resp = await fetch('/api/save-smtp', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(cfg)
+        });
+        const d = await resp.json();
+        if (d.success) {
+          resultEl.style.display = 'block';
+          resultEl.style.background = 'rgba(16,185,129,0.1)';
+          resultEl.style.border = '1px solid rgba(16,185,129,0.3)';
+          resultEl.style.color = '#6ee7b7';
+          resultEl.textContent = `✅ Saved! OTP emails will now be sent from ${user} to every candidate's inbox.`;
+          setTimeout(() => {
+            document.getElementById('smtp-modal').classList.remove('active');
+            window.AuthModule.showToast('✅ Gmail OTP Activated!', `Emails will be sent from ${user} to all candidate inboxes.`, 'success');
+          }, 2000);
+        }
+      } catch (err) {
+        resultEl.style.display = 'block';
+        resultEl.style.background = 'rgba(244,63,94,0.1)';
+        resultEl.style.border = '1px solid rgba(244,63,94,0.3)';
+        resultEl.style.color = '#fda4af';
+        resultEl.textContent = '❌ Could not save: Portal server not running. Please start server.ps1 first.';
+      }
+    };
+  </script>
+</body>
+</html>
+

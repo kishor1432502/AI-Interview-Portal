@@ -1,0 +1,8 @@
+{
+  "host": "smtp.gmail.com",
+  "port": 587,
+  "enableSsl": true,
+  "username": "your_email@gmail.com",
+  "password": "PASTE_16_CHAR_GMAIL_APP_PASSWORD_HERE",
+  "from": "your_email@gmail.com"
+}

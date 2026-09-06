@@ -1,0 +1,15 @@
+{
+  "name": "ai-interview-lockdown-browser",
+  "version": "1.0.0",
+  "description": "Dedicated Secure Lockdown Desktop Client for AI Proctored Interviews",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron ."
+  },
+  "keywords": ["lockdown", "proctoring", "webrtc", "kiosk", "interview"],
+  "author": "AI Interview Engineering",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "electron": "^28.2.0"
+  }
+}
