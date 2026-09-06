@@ -50,6 +50,20 @@ window.OtpModule = {
       resendBtn.addEventListener('click', () => this.resendOTP());
     }
 
+    const verifyBtn = document.getElementById('btn-verify-otp');
+    if (verifyBtn) {
+      verifyBtn.addEventListener('click', async () => {
+        try {
+          if (!document.fullscreenElement) {
+            await document.documentElement.requestFullscreen();
+          }
+        } catch (err) {
+          console.warn('Fullscreen entry on verify click:', err);
+        }
+        this.checkAutoSubmit();
+      });
+    }
+
     const previewEl = document.getElementById('otp-simulation-code');
     if (previewEl) {
       previewEl.style.cursor = 'pointer';
@@ -243,12 +257,15 @@ window.OtpModule = {
 
   async startInterviewDirectly() {
     try {
-      // 1. Enter Fullscreen automatically
-      if (!document.fullscreenElement) {
-        document.documentElement.requestFullscreen().catch(() => {});
-      }
+      // 1. CRITICAL: Request Fullscreen FIRST before any awaits
+      // Browser requires a direct user gesture call — no await before this!
+      const fsPromise = document.fullscreenElement
+        ? Promise.resolve()
+        : document.documentElement.requestFullscreen().catch((e) => {
+            console.warn('Fullscreen blocked by browser (will retry on navigation):', e);
+          });
 
-      // 2. Request Entire Screen Share automatically
+      // 2. Request Entire Screen Share
       window.AuthModule.showToast('Screen Share Required', 'Please select "Entire Screen" in the browser dialog.', 'warning');
       let screenStream = null;
       try {
@@ -259,6 +276,9 @@ window.OtpModule = {
       } catch (e) {
         console.warn('Screen share skipped or cancelled:', e);
       }
+
+      // Wait for fullscreen to complete
+      await fsPromise.catch(() => {});
 
       // 3. Connect Camera & Mic automatically
       let camStream = null;
@@ -275,6 +295,11 @@ window.OtpModule = {
 
       // 4. Create session and launch directly into Interview!
       const session = window.DataStore.createSession(this.currentUserId, 'LKD-' + Date.now());
+
+      // Ensure fullscreen overlay is hidden
+      const overlay = document.getElementById('fullscreen-required-overlay');
+      if (document.fullscreenElement && overlay) overlay.style.display = 'none';
+
       window.AppRouter.navigate('interview');
 
       if (window.ProctorEngine) {
@@ -286,7 +311,7 @@ window.OtpModule = {
 
     } catch (err) {
       console.error('Direct interview start error:', err);
-      // Fallback
+      // Fallback — navigate anyway
       window.AppRouter.navigate('interview');
     }
   }
